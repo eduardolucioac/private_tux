@@ -80,6 +80,14 @@ f_inst_or_up_chkrootkit() {
             rm -f "$SCRIPTDIR_V/pack/$CRKIT_FL_NM_C"
             rm -rf "/usr/local/chkrootkit"
         fi
+
+        # NOTE: Check if the folder exists. Note that this folder will exist Whenever
+        # Chkrootkit is being UPDATED. By Questor
+        f_chk_fd_fl "$SCRIPTDIR_V/pack" "d"
+        if [ ${CHK_FD_FL_R} -eq 0 ] ; then
+            mkdir -p "$SCRIPTDIR_V/pack"
+        fi
+
         mv "/tmp/$CRKIT_FL_NM_C" "$SCRIPTDIR_V/pack/$CRKIT_FL_NM_C"
         cd "$SCRIPTDIR_V/pack"
         tar -zxvf "$CRKIT_FL_NM_C"

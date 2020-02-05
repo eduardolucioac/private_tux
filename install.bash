@@ -70,7 +70,7 @@ EOF
 
 read -d '' COMPANY_F <<"EOF"
 Eduardo Lúcio Amorim Costa
-https://github.com/eduardolucioac - Brasil-DF
+https://github.com/eduardolucioac/private_tux - Brasil-DF
 Free software! Embrace that idea!
 EOF
 
@@ -367,7 +367,14 @@ f_update_n_inst_other() {
     cp -v "$SCRIPTDIR_V/LICENSE.txt" "/usr/local/private_tux/"
     cp -v "$SCRIPTDIR_V/p_tux.bash" "/usr/local/private_tux/"
     cp -v "$SCRIPTDIR_V/README.md" "/usr/local/private_tux/"
-    cp -vr "$SCRIPTDIR_V/pack" "/usr/local/private_tux/"
+
+    # NOTE: Check if the folder exists. Note that this folder will exist whenever
+    # Chkrootkit is installed. By Questor
+    f_chk_fd_fl "$SCRIPTDIR_V/pack" "d"
+    if [ ${CHK_FD_FL_R} -eq 1 ] ; then
+        cp -vr "$SCRIPTDIR_V/pack" "/usr/local/private_tux/"
+    fi
+
     mkdir "/usr/local/private_tux/inst"
     cp -v "$SCRIPTDIR_V/inst/chkrootkit.bash" "/usr/local/private_tux/inst/"
     mkdir "/usr/local/private_tux/conf"

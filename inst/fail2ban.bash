@@ -63,7 +63,7 @@ Use empty for \"$MAXRETRY_DEFAULT\".
     fi
 
     DEFAULT_ACTION="action_"
-    OPT_ARR=("action_" "Ban only" "action_mw" "Ban and send an email reporting \"whois\" to the recipient at \"destemail\"" "action_mwl" "Ban and send an email reporting \"whois \" and relevant log lines to the recipient in \"destemail\"")
+    OPT_ARR=("action_" "Ban only" "action_mw" "Ban and send an email reporting \"whois\" to the recipient at \"destemail\"" "action_mwl" "Ban and send an email reporting \"whois\" and relevant log lines to the recipient in \"destemail\"")
     f_div_section
     f_get_usr_input_mult "Default action when a \"jail\" (ban action) is triggered.
  * Recommended: use \"action_\" or empty for \"Ban only\"." OPT_ARR[@] 1
