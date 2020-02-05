@@ -32,7 +32,7 @@ f_inst_chrony() {
             firewall-cmd --add-service=ntp --permanent
             firewall-cmd --reload
             systemctl enable chronyd.service
-            systemctl start chronyd.service
+            systemctl restart chronyd.service
             chronyc -a "burst 3/5"
             chronyc makestep 1 -1
         ;;

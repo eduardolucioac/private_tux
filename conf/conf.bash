@@ -21,10 +21,10 @@ CRKIT_FL_NM_PREF_C="chkrootkit-"
 # NOTE: Enables or disables notifications via the configured email. By Questor
 SEND_MAIL_NOTIF_C=1
 
-# NOTE: Destinatary of the notification emails. By Questor
-SEND_MAIL_DEST_C="eduardolucioac@gmail.com"
+# NOTE: Destinatary of the e-mail notifications. By Questor
+SEND_MAIL_DEST_C="my_dest@my_domain.com"
 
 # NOTE: Keep the last X logs. By Questor
-LOGS_KEEP_C=15
+LOGS_KEEP_C=45
 
 # < -----------------------------------------

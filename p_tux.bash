@@ -118,7 +118,7 @@ f_p_tux() {
             # [Ref.: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-viewing_current_status_and_settings_of_firewalld ]
             # NOTE: Log firewall service status. By Questor
             f_log_manager ">>> Firewall service status. <<<" "$LOG_FILE_NM_NOW"
-            firewall-cmd --list-all > f_p_tux_op_to_log 2>&1
+            systemctl status firewalld > f_p_tux_op_to_log 2>&1
             F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
             f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
 
@@ -186,16 +186,12 @@ f_p_tux() {
     # NOTE: Chkrootkit scan. By Questor
     f_log_manager ">>> Chkrootkit scan. <<<" "$LOG_FILE_NM_NOW"
 
-    # SCRIPTDIR_V="/usr/local/src/private_tux"
-
     # NOTE: Avoid "not tested"/"can't exec" errors. By Questor
     cd /usr/local/chkrootkit
 
     # /usr/local/chkrootkit/chkrootkit -q
     /usr/local/chkrootkit/chkrootkit > $SCRIPTDIR_V/f_p_tux_op_to_log 2>&1
     cd "$SCRIPTDIR_V"
-
-    # cat "f_p_tux_op_to_log"
 
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
     f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
@@ -224,8 +220,8 @@ f_p_tux() {
     # NOTE: Remove output file for stdout and stderr. By Questor
     rm -f "$SCRIPTDIR_V/f_p_tux_op_to_log"
 
-    # [Ref.: https://stackoverflow.com/a/34862475/3223785 ]
     # NOTE: Delete all log files but the most recent "LOGS_KEEP_C" files. By Questor
+    # [Ref.: https://stackoverflow.com/a/34862475/3223785 ]
     ls -tp /var/log/p_tux | grep -v '/$' | tail -n +$((LOGS_KEEP_C+1)) | xargs -d '\n' -r rm --
 
     # NOTE: Security routine ended. By Questor

@@ -4,6 +4,8 @@
 SCRIPTDIR_V="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPTDIR_V"
 
+# IMAGE! IMAGE! IMAGE! IMAGE! IMAGE! IMAGE! https://lh3.googleusercontent.com/proxy/qwNgMbTs--e0FOfl94gTF7R7Iu-KvgipFawjQBSnPGCcdfAav-f5nTttKWEZsFdBYnhJyOGf2ZyWNS3h02JZFGoXkvYWYK-AEgqdwNcTDjhsEgVdpH-hqpVLmBM9
+
 # NOTE: Load main library. By Questor
 . $SCRIPTDIR_V/lib/ez_i.bash
 
@@ -120,7 +122,7 @@ The INSTALLER will prepare the server and will install and/or configure some com
 
  . Chrony - Chrony is a versatile implementation of the Network Time Protocol (NTP);
     URL: https://chrony.tuxfamily.org/
- . Sendmail - Email routing feature for general purpose networks;
+ . Sendmail - E-mail routing feature for general purpose networks;
     URL: https://www.proofpoint.com/us/products/open-source-email-solution
  . Fail2ban - Intrusion prevention software framework that protects servers against brute force attacks;
     URL: https://www.fail2ban.org/wiki/index.php/Main_Page
@@ -133,7 +135,7 @@ The SECURITY ROUTINE (p_tux.bash) must be scheduled in crontab (a time-based job
 
 All installer and security routine settings are in the conf.bash file.
 
-The Fail2ban component works independently (including email notifications) and will be configured to monitor (\"jail\") "sshd" ( https://www.ssh.com/ssh/sshd ). The others components will be used by the security routine.
+The Fail2ban component works independently (including e-mail notifications) and will be configured to monitor (\"jail\") "sshd" ( https://www.ssh.com/ssh/sshd ). The others components will be used by the security routine.
 
 To cancel installation at any time use Ctrl+c.
 
@@ -158,7 +160,7 @@ f_set_host_name() {
         f_div_section
         f_yes_no "Apparently there is no defined a specific name for this server.
 (your server name: \"$(hostname)\")
- * A specific name is important, among other things, for automatic email notifications."
+ * A specific name is important, among other things, for automatic e-mail notifications."
         if [ ${YES_NO_R} -eq 1 ] ; then
             QUESTION_F="Inform a new server name (e.g. \"my_server.my_domain.com\")."
             f_div_section
@@ -166,7 +168,13 @@ f_set_host_name() {
             QUESTION_F=""
             case "$DISTRO_TYPE" in
                 RH)
-                    hostnamectl set-hostname "$GET_USR_INPUT_R"
+                    # Refs.: https://support.rackspace.com/how-to/centos-hostname-change/ , 
+                    # https://phoenixnap.com/kb/how-to-set-or-change-a-hostname-in-centos-7 , 
+                    # https://www.cyberciti.biz/faq/rhel-redhat-centos-7-change-hostname-command/ ]
+                    echo "127.0.0.1   $GET_USR_INPUT_R" | tee -a /etc/hosts > /dev/null 2>&1
+                    echo "HOSTNAME=$GET_USR_INPUT_R" | tee -a /etc/sysconfig/network > /dev/null 2>&1
+                    hostnamectl set-hostname "$GET_USR_INPUT_R" --static
+                    systemctl restart network.service
                 ;;
                 *)
                     f_log_manager "ERROR: Not implemented to your OS." "$SCRIPTDIR_V/installation.log" 0 "" 0
@@ -212,6 +220,7 @@ f_set_crontab() {
             f_div_section
             f_get_usr_input "$QUESTION_F"
             QUESTION_F=""
+            # [Ref.: https://stackoverflow.com/a/29903172/3223785 ]
             SCHED_HOUR=$(echo "$GET_USR_INPUT_R" | cut -d ":" -f 1)
             SCHED_MIN=$(echo "$GET_USR_INPUT_R" | cut -d ":" -f 2)
         ;;
@@ -246,6 +255,29 @@ f_set_crontab() {
     # [Ref.: https://stackoverflow.com/a/9625233/3223785 ]
     (crontab -l 2>/dev/null; echo "$SCHED_MIN $SCHED_HOUR * * * /usr/local/private_tux/p_tux.bash") | crontab -
     f_log_manager "Configuration of crontab schedule has been done." "$SCRIPTDIR_V/installation.log" 0 "" 1
+}
+
+# NOTE: Set the destinatary of the e-mail notifications. By Questor
+f_set_dest() {
+    QUESTION_F="Inform the destinatary of the e-mail notifications (e.g. \"my_dest@my_domain.com\").
+* E-mail that will receive notifications of Private_Tux's components."
+    f_div_section
+    f_get_usr_input "$QUESTION_F"
+    QUESTION_F=""
+
+    # NOTE: Updates the variable's value in memory! By Questor
+    SEND_MAIL_DEST_C=$GET_USR_INPUT_R
+
+    f_power_sed_ecp "\"$GET_USR_INPUT_R\"" 1
+    TARGET_ITEM="SEND_MAIL_DEST_C=.*"
+    REPLACE_ITEM="SEND_MAIL_DEST_C=$F_POWER_SED_ECP_R"
+
+    # NOTE: Replace the entire line. By Questor
+    SED_CMD="'0,/$TARGET_ITEM/s//$REPLACE_ITEM/g'"
+
+    eval "sed -i $SED_CMD $SCRIPTDIR_V/conf/conf.bash"
+    # [Ref.: https://stackoverflow.com/a/8822211/3223785 ]
+    f_log_manager "The destinatary of the e-mail notifications has been set at \"./conf/conf.bash\" configuration file." "$SCRIPTDIR_V/installation.log" 0 "" 1
 }
 
 # NOTE: Update your system and install some dependencies. By Questor
@@ -285,6 +317,8 @@ f_update_n_inst_other() {
         f_inst_chrony
     fi
     f_close_section
+
+    f_set_dest
 
     f_open_section
     f_div_section
@@ -328,21 +362,40 @@ f_update_n_inst_other() {
     fi
     f_close_section
 
-    f_log_manager "Copying Private_Tux folder to the \"/usr/local/\" folder." "$SCRIPTDIR_V/installation.log" 0 "" 1
-    cp -vr "$SCRIPTDIR_V" "/usr/local/private_tux"
+    # TODO: Copying Private_Tux's components to the \"/usr/local/private_tux\" folder. By Questor
+    mkdir "/usr/local/private_tux"
+    cp -v "$SCRIPTDIR_V/LICENSE.txt" "/usr/local/private_tux/"
+    cp -v "$SCRIPTDIR_V/p_tux.bash" "/usr/local/private_tux/"
+    cp -v "$SCRIPTDIR_V/README.md" "/usr/local/private_tux/"
+    cp -vr "$SCRIPTDIR_V/pack" "/usr/local/private_tux/"
+    mkdir "/usr/local/private_tux/inst"
+    cp -v "$SCRIPTDIR_V/inst/chkrootkit.bash" "/usr/local/private_tux/inst/"
+    mkdir "/usr/local/private_tux/conf"
+    cp -v "$SCRIPTDIR_V/conf/conf.bash" "/usr/local/private_tux/conf/"
+    mkdir "/usr/local/private_tux/lib"
+    cp -v "$SCRIPTDIR_V/lib/ez_i.bash" "/usr/local/private_tux/lib/"
+    mkdir "/usr/local/private_tux/resrc"
+    cp -v "$SCRIPTDIR_V/resrc/other.bash" "/usr/local/private_tux/resrc/"
 
-    f_log_manager "Make \"/usr/local/private_tux/p_tux.bash\" executable." "$SCRIPTDIR_V/installation.log" 0 "" 1
     chmod u+x "/usr/local/private_tux/p_tux.bash"
-
-    f_log_manager "Private_Tux has been installed at \"/usr/local/private_tux\" path." "$SCRIPTDIR_V/installation.log" 0 "" 1
+    echo ""
+    f_open_section
+    f_log_manager "The \"/usr/local/private_tux/p_tux.bash\" file is defined as executable." "$SCRIPTDIR_V/installation.log" 0 "" 1
+    f_div_section
+    f_log_manager "Private_Tux's components are installed in the \"/usr/local/private_tux\" folder." "$SCRIPTDIR_V/installation.log" 0 "" 1
 }
 
 f_open_section
 f_div_section
 f_yes_no "Install Private_Tux?
- * Your system will be updated and some dependencies will be installed and configured."
+ * Your system will be updated and some dependencies will be installed and/or configured."
 if [ ${YES_NO_R} -eq 1 ] ; then
     f_update_n_inst_other
+fi
+    f_div_section
+    f_log_manager "Installation canceled." "$SCRIPTDIR_V/installation.log" 0 "" 1
+    f_close_section
+    exit 0
 fi
 f_close_section
 
@@ -361,6 +414,9 @@ USEFUL_INFO_F="To configure the security routine (p_tux.bash)...
 
 Installation Log...
     vi $SCRIPTDIR_V/installation.log
+
+Security routine (p_tux.bash)...
+    /usr/local/private_tux/p_tux.bash
 
 Security routine (p_tux.bash) logs...
     /var/log/p_tux/*"

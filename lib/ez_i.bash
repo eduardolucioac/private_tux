@@ -219,7 +219,7 @@ f_power_sed_ecp() {
 
     Args:
         F_VAL_TO_ECP (str): Value to be escaped.
-        F_ECP_TYPE (int): 0 - For the TARGET value; 1 - For the value for REPLACE.
+        F_ECP_TYPE (int): 0 - For the TARGET value; 1 - For the REPLACE value.
 
     Returns:
         F_POWER_SED_ECP_R (str): Escaped value.

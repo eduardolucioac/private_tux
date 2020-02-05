@@ -82,12 +82,11 @@ Use empty for \"$SMTP_DOMAIN\"."
     AUTHINFO_CONT="AuthInfo:$SMTP_SERVER \"U:root\" \"I:$SMTP_SRV_USR\" \"P:$SMTP_SRV_PWD\""
     eval "echo '$AUTHINFO_CONT' > $AUTHINFO"
 
-    f_ez_mv_bak "$SENDMAIL_MC" "" 1 1 1
+    f_ez_mv_bak "$GENERICSTABLE" "" 1 1 1
     GENERICSTABLE_CONT="root           $SMTP_SRV_USR"
     eval "echo '$GENERICSTABLE_CONT' > $GENERICSTABLE"
 
-    f_ez_mv_bak "$GENERICSTABLE" "" 1 1 1
-
+    f_ez_mv_bak "$SENDMAIL_MC" "" 1 1 1
     # NOTE: The "\" before "`" and "$" will prevent shell execution and expansion
     # respectively. By Questor
     f_power_sed "MAILER(smtp)dnl" "define(\`SMART_HOST', \`$SMTP_SERVER')dnl

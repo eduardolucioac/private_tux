@@ -99,7 +99,7 @@ Use empty for \"$MAXRETRY_DEFAULT\".
 
                 f_open_section
                 f_div_section
-                f_yes_no "Use this email as a sender \"$SENDER\"?
+                f_yes_no "Use \"$SENDER\" email as sender (\"sender\")?
  * If you chose to configure Sendmail using this installer answer \"y\"."
                 if [ ${YES_NO_R} -eq 0 ] ; then
                     f_def_f2b_sender
@@ -111,12 +111,20 @@ Use empty for \"$MAXRETRY_DEFAULT\".
             f_def_f2b_sender
         fi
 
-        QUESTION_F="Inform \"destemail\" (e.g. \"my_dest@my_domain.com\").
- * Email that will be notified when a \"jail\" is triggered."
+        f_open_section
         f_div_section
-        f_get_usr_input "$QUESTION_F"
-        QUESTION_F=""
-        DESTEMAIL=$GET_USR_INPUT_R
+        f_yes_no "Use \"$SEND_MAIL_DEST_C\" email as destinatary (\"destemail\") (\"y\" recommended)?"
+        if [ ${YES_NO_R} -eq 1 ] ; then
+            DESTEMAIL=$SEND_MAIL_DEST_C
+        else
+            QUESTION_F="Inform \"destemail\" (e.g. \"my_dest@my_domain.com\").
+ * Email that will be notified when a \"jail\" is triggered."
+            f_div_section
+            f_get_usr_input "$QUESTION_F"
+            QUESTION_F=""
+            DESTEMAIL=$GET_USR_INPUT_R
+        fi
+        f_close_section
 
     else
         DESTEMAIL="my_dest@my_domain.com"
