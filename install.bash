@@ -378,7 +378,10 @@ f_update_n_inst_other() {
     cp -v "$SCRIPTDIR_V/resrc/other.bash" "/usr/local/private_tux/resrc/"
 
     chmod u+x "/usr/local/private_tux/p_tux.bash"
+
+    # NOTE: To improve aesthetics in the terminal output. By Questor
     echo ""
+
     f_open_section
     f_log_manager "The \"/usr/local/private_tux/p_tux.bash\" file is defined as executable." "$SCRIPTDIR_V/installation.log" 0 "" 1
     f_div_section
@@ -391,7 +394,7 @@ f_yes_no "Install Private_Tux?
  * Your system will be updated and some dependencies will be installed and/or configured."
 if [ ${YES_NO_R} -eq 1 ] ; then
     f_update_n_inst_other
-fi
+else
     f_div_section
     f_log_manager "Installation canceled." "$SCRIPTDIR_V/installation.log" 0 "" 1
     f_close_section

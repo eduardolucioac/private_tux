@@ -42,6 +42,7 @@ $(cat "$LOG_FILE_NM_NOW")
 
 $(hostname)
 Free software! Embrace that idea!
+https://github.com/eduardolucioac/private_tux
 "
     f_log_manager ">>> Send email notification. <<<" "$LOG_FILE_NM_NOW"
     echo -n "$MAIL_CONTENT" | sendmail -Am -d60.5 -v $SEND_MAIL_DEST_C > f_p_tux_op_to_log 2>&1
