@@ -253,6 +253,8 @@ f_set_crontab() {
         ;;
     esac
 
+    # NOTE: As crontab doesn't have the right path variables, we need to add the current
+    # user (root) path (`PATH=$PATH`) definition to the crontab schedule. By Questor
     # [Refs.: https://stackoverflow.com/a/9625233/3223785 , 
     # https://unix.stackexchange.com/a/487604/61742 , 
     # https://linuxize.com/post/scheduling-cron-jobs-with-crontab/ , 
