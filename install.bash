@@ -267,7 +267,7 @@ f_set_crontab() {
 # NOTE: Set the destinatary of the e-mail notifications. By Questor
 f_set_dest() {
     QUESTION_F="Inform the destinatary of the e-mail notifications (e.g. \"my_dest@my_domain.com\").
-* E-mail that will receive notifications of Private_Tux's components."
+ * E-mail that will receive notifications of Private_Tux's components."
     f_div_section
     f_get_usr_input "$QUESTION_F"
     QUESTION_F=""
