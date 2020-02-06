@@ -199,7 +199,12 @@ f_p_tux() {
 
     # NOTE: Update Rkhunter signatures. By Questor
     f_log_manager ">>> Rkhunter signatures update started. <<<" "$LOG_FILE_NM_NOW"
-    rkhunter --update --nocolors > f_p_tux_op_to_log 2>&1
+
+    # NOTE: "--propupd" should be used after any "yum update" automatically or manualy.
+    # By Questor
+    # [Ref.: https://unix.stackexchange.com/a/397562/61742 ]
+    rkhunter --update --propupd --nocolors > f_p_tux_op_to_log 2>&1
+
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
     f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
 

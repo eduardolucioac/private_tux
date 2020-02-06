@@ -23,13 +23,11 @@ f_inst_rkhunter() {
             yum -y install epel-release
             yum -y install rkhunter
 
-            # NOTE: Update your system file properties. By Questor
-            rkhunter --update
-
-            # NOTE: Looks for various data updates. By Questor
-            rkhunter --propupd
-
+            # NOTE: Update your system file properties and looks for various data
+            # updates. By Questor
             # [Ref.: https://sourceforge.net/p/rkhunter/wiki/propupd/ ]
+            rkhunter --update --propupd
+
         ;;
         *)
             f_log_manager "ERROR: Not implemented to your OS." "$SCRIPTDIR_V/installation.log" 0 "" 0
