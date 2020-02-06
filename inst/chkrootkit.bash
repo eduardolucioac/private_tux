@@ -19,6 +19,7 @@ f_inst_or_up_chkrootkit() {
     else
         echo "Downloading Chkrootkit from address $CRKIT_URL_C ."
     fi
+    rm -rf "$SCRIPTDIR_V/tmp"
     mkdir "$SCRIPTDIR_V/tmp"
     curl -Sso "$SCRIPTDIR_V/tmp/$CRKIT_FL_NM_C" "$CRKIT_URL_C"
     f_chk_fd_fl "$SCRIPTDIR_V/tmp/$CRKIT_FL_NM_C" "f"
