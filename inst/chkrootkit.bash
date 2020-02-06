@@ -19,8 +19,9 @@ f_inst_or_up_chkrootkit() {
     else
         echo "Downloading Chkrootkit from address $CRKIT_URL_C ."
     fi
-    curl -Sso "/tmp/$CRKIT_FL_NM_C" "$CRKIT_URL_C"
-    f_chk_fd_fl "/tmp/$CRKIT_FL_NM_C" "f"
+    mkdir "$SCRIPTDIR_V/tmp"
+    curl -Sso "$SCRIPTDIR_V/tmp/$CRKIT_FL_NM_C" "$CRKIT_URL_C"
+    f_chk_fd_fl "$SCRIPTDIR_V/tmp/$CRKIT_FL_NM_C" "f"
     if [ ${CHK_FD_FL_R} -eq 0 ] ; then
         if [ ${I_OR_UP_CHKR_MODE} -eq 0 ] ; then
             f_log_manager "ERROR: Could not download Chkrootkit from address $CRKIT_URL_C ." "$SCRIPTDIR_V/installation.log" 0 "" 0
@@ -41,7 +42,7 @@ f_inst_or_up_chkrootkit() {
         CRKIT_INST_UPDT=1
     else
         CURRENT_MD5=$(eval "md5sum \"$SCRIPTDIR_V/pack/$CRKIT_FL_NM_C\" | cut -d ' ' -f 1")
-        NEW_MD5=$(eval "md5sum \"/tmp/$CRKIT_FL_NM_C\" | cut -d ' ' -f 1")
+        NEW_MD5=$(eval "md5sum \"$SCRIPTDIR_V/tmp/$CRKIT_FL_NM_C\" | cut -d ' ' -f 1")
         if [ "$NEW_MD5" != "$CURRENT_MD5" ]; then
             if [ ${I_OR_UP_CHKR_MODE} -eq 0 ] ; then
                 f_log_manager "Updating Chkrootkit." "$SCRIPTDIR_V/installation.log" 0 "" 1
@@ -55,7 +56,7 @@ f_inst_or_up_chkrootkit() {
             else
                 echo "Chkrootkit is up to date."
             fi
-            rm -f "/tmp/$CRKIT_FL_NM_C"
+            rm -rf "$SCRIPTDIR_V/tmp"
         fi
     fi
     if [ ${CRKIT_INST_UPDT} -gt 0 ] ; then
@@ -67,7 +68,7 @@ f_inst_or_up_chkrootkit() {
                 fi
             ;;
             *)
-                rm -f "/tmp/$CRKIT_FL_NM_C"
+                rm -rf "$SCRIPTDIR_V/tmp"
                 if [ ${I_OR_UP_CHKR_MODE} -eq 0 ] ; then
                     f_log_manager "ERROR: Not implemented to your OS." "$SCRIPTDIR_V/installation.log" 0 "" 0
                     f_error_exit "Not implemented to your OS."
@@ -88,7 +89,7 @@ f_inst_or_up_chkrootkit() {
             mkdir -p "$SCRIPTDIR_V/pack"
         fi
 
-        mv "/tmp/$CRKIT_FL_NM_C" "$SCRIPTDIR_V/pack/$CRKIT_FL_NM_C"
+        mv "$SCRIPTDIR_V/tmp/$CRKIT_FL_NM_C" "$SCRIPTDIR_V/pack/$CRKIT_FL_NM_C"
         cd "$SCRIPTDIR_V/pack"
         tar -zxvf "$CRKIT_FL_NM_C"
         rm -rf "/usr/local/chkrootkit"
