@@ -252,9 +252,14 @@ f_set_crontab() {
             f_error_exit "Not implemented to your OS."
         ;;
     esac
-    # [Ref.: https://stackoverflow.com/a/9625233/3223785 ]
-    (crontab -l 2>/dev/null; echo "$SCHED_MIN $SCHED_HOUR * * * /usr/local/private_tux/p_tux.bash") | crontab -
+
+    # [Refs.: https://stackoverflow.com/a/9625233/3223785 , 
+    # https://unix.stackexchange.com/a/487604/61742 , 
+    # https://linuxize.com/post/scheduling-cron-jobs-with-crontab/ , 
+    # https://stackoverflow.com/q/2388087/3223785 ]
+    (crontab -l 2>/dev/null; printf "PATH=$PATH\n$SCHED_MIN $SCHED_HOUR * * * /usr/local/private_tux/p_tux.bash\n") | crontab -
     f_log_manager "Configuration of crontab schedule has been done." "$SCRIPTDIR_V/installation.log" 0 "" 1
+
 }
 
 # NOTE: Set the destinatary of the e-mail notifications. By Questor
