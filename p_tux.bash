@@ -26,7 +26,7 @@ f_sendmail() {
 
     # NOTE: Retrieves the sender email from the file defined in "$GENERICSTABLE"
     # (Sendmail). By Questor
-    MAIL_FROM=$(cat $GENERICSTABLE | grep "root")
+    MAIL_FROM=$(cat $GENERICSTABLE | grep "root ")
     MAIL_FROM=${MAIL_FROM#"root"}
     MAIL_FROM=$(echo $MAIL_FROM | sed 's/ *$//g')
 

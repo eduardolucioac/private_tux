@@ -89,7 +89,7 @@ Use empty for \"$MAXRETRY_DEFAULT\".
         GENERICSTABLE="/etc/mail/genericstable"
         f_chk_fd_fl "$GENERICSTABLE" "f"
         if [ ${CHK_FD_FL_R} -eq 1 ] ; then
-            MAIL_FROM=$(cat $GENERICSTABLE | grep "root")
+            MAIL_FROM=$(cat $GENERICSTABLE | grep "root ")
             MAIL_FROM=${MAIL_FROM#"root"}
             MAIL_FROM=$(echo $MAIL_FROM | sed 's/ *$//g')
             SENDER=$MAIL_FROM
