@@ -91,6 +91,7 @@ f_inst_or_up_chkrootkit() {
         fi
 
         mv "$SCRIPTDIR_V/tmp/$CRKIT_FL_NM_C" "$SCRIPTDIR_V/pack/$CRKIT_FL_NM_C"
+        rm -rf "$SCRIPTDIR_V/tmp"
         cd "$SCRIPTDIR_V/pack"
         tar -zxvf "$CRKIT_FL_NM_C"
         rm -rf "/usr/local/chkrootkit"
