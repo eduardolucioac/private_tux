@@ -53,13 +53,13 @@ Use empty for \"$SMTP_PORT\"."
         SMTP_PORT=$GET_USR_INPUT_R
     fi
 
-    QUESTION_F="Inform your smtp server USER (e.g. \"my_user@my_domain.com\")."
+    QUESTION_F="Inform your smtp server USER/SENDER (e.g. \"my_user@my_domain.com\")."
     f_div_section
     f_get_usr_input "$QUESTION_F"
     QUESTION_F=""
     SMTP_SRV_USR=$GET_USR_INPUT_R
 
-    QUESTION_F="Inform your smtp server user PASSWORD."
+    QUESTION_F="Inform your smtp server user/sender PASSWORD."
     f_div_section
     f_get_usr_input "$QUESTION_F" 0 1
     QUESTION_F=""
