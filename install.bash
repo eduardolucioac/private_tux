@@ -116,7 +116,7 @@ f_chk_distro
 
 read -d '' INSTRUCT_F <<"EOF"
 
-Private Tux consists of two parts an INSTALLER and a SECURITY ROUTINE.
+Private_Tux consists of two parts an INSTALLER and a SECURITY ROUTINE.
 
 The INSTALLER will prepare the server and will install and/or configure some components include these:
 
