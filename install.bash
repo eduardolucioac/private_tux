@@ -427,7 +427,7 @@ Installer finished! Thanks!
 EOF
 
 USEFUL_INFO_F="To configure the security routine (p_tux.bash)...
-    vi $SCRIPTDIR_V/conf/conf.bash
+    vi /usr/local/private_tux/conf/conf.bash
 
 Installation Log...
     vi $SCRIPTDIR_V/installation.log
