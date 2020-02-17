@@ -267,6 +267,9 @@ f_p_tux() {
     # [Ref.: https://unix.stackexchange.com/a/397562/61742 ]
     rkhunter --propupd --nocolors > f_p_tux_op_to_log 2>&1
 
+    F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
+
     # NOTE: Checks ended. By Questor
     f_log_manager ">>> Checks ended. <<<" "$LOG_FL_PATH_N_NM"
 
