@@ -130,19 +130,6 @@ f_p_tux() {
 
     f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
-    # NOTE: Update system. By Questor
-    f_log_manager ">>> System update started. <<<" "$LOG_FL_PATH_N_NM"
-    case "$DISTRO_TYPE" in
-        RH)
-            yum -y update > f_p_tux_op_to_log 2>&1
-            F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-            f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
-        ;;
-        *)
-            f_log_manager "ERROR: Not implemented to your OS." "$LOG_FL_PATH_N_NM"
-        ;;
-    esac
-
     # NOTE: Log current network connections. By Questor
     f_log_manager ">>> Log current network connections with netstat. <<<" "$LOG_FL_PATH_N_NM"
     netstat -netaup > f_p_tux_op_to_log 2>&1
@@ -246,11 +233,7 @@ f_p_tux() {
 
     # NOTE: Update Rkhunter signatures. By Questor
     f_log_manager ">>> Rkhunter signatures update started. <<<" "$LOG_FL_PATH_N_NM"
-
-    # NOTE: "--propupd" should be used after any "yum update" automatically or manualy.
-    # By Questor
-    # [Ref.: https://unix.stackexchange.com/a/397562/61742 ]
-    rkhunter --update --propupd --nocolors > f_p_tux_op_to_log 2>&1
+    rkhunter --update --nocolors > f_p_tux_op_to_log 2>&1
 
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
     f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
@@ -261,6 +244,28 @@ f_p_tux() {
     rkhunter --check --nocolors --skip-keypress > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
     f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
+
+    # NOTE: Update system. By Questor
+    f_log_manager ">>> System update started. <<<" "$LOG_FL_PATH_N_NM"
+    case "$DISTRO_TYPE" in
+        RH)
+            yum -y update > f_p_tux_op_to_log 2>&1
+            F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
+            f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
+        ;;
+        *)
+            f_log_manager "ERROR: Not implemented to your OS." "$LOG_FL_PATH_N_NM"
+        ;;
+    esac
+
+    # NOTE: Update Rkhunter file properties checks. By Questor
+    f_log_manager ">>> Rkhunter file properties checks update started. <<<" "$LOG_FL_PATH_N_NM"
+
+    # NOTE: "--propupd" must be used AFTER any "yum update" automatically or manualy.
+    # If this is not done in this order, we will not be able to detect sudden changes
+    # in system files. If done before a "yum update" we will have false positives. By Questor
+    # [Ref.: https://unix.stackexchange.com/a/397562/61742 ]
+    rkhunter --propupd --nocolors > f_p_tux_op_to_log 2>&1
 
     # NOTE: Checks ended. By Questor
     f_log_manager ">>> Checks ended. <<<" "$LOG_FL_PATH_N_NM"
