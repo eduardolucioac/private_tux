@@ -22,6 +22,7 @@ f_inst_fail2ban() {
 
             yum -y install epel-release
             yum -y install fail2ban
+            yum -y install fail2ban-systemd
         ;;
         *)
             f_log_manager "ERROR: Not implemented to your OS." "$SCRIPTDIR_V/installation.log" 0 "" 0

@@ -150,10 +150,17 @@ f_p_tux() {
 
     case "$DISTRO_TYPE" in
         RH)
+
+            # NOTE: Log Fail2ban service status. By Questor
+            f_log_manager ">>> Fail2ban service status. <<<" "$LOG_FL_PATH_N_NM"
+            systemctl status fail2ban.service > f_p_tux_op_to_log 2>&1
+            F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
+            f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
+
             # [Ref.: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-viewing_current_status_and_settings_of_firewalld ]
             # NOTE: Log firewall service status. By Questor
             f_log_manager ">>> Firewall service status. <<<" "$LOG_FL_PATH_N_NM"
-            systemctl status firewalld > f_p_tux_op_to_log 2>&1
+            systemctl status firewalld.service > f_p_tux_op_to_log 2>&1
             F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
             f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
@@ -168,6 +175,7 @@ f_p_tux() {
             sestatus > f_p_tux_op_to_log 2>&1
             F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
             f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
+
         ;;
         *)
             f_log_manager "ERROR: Not implemented to your OS." "$LOG_FL_PATH_N_NM"
