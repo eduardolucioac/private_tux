@@ -17,8 +17,9 @@ SCRIPTDIR_V="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # NOTE: Load Chkrootkit intallation functionalities. By Questor
 . $SCRIPTDIR_V/inst/chkrootkit.bash
 
-# NOTE: It will send an email through a relay previously configured in Sendmail. By Questor
-LOG_FILE_NM_NOW=""
+# NOTE: It will send an email through a relay previously configured in Sendmail.
+# By Questor
+LOG_FL_PATH_N_NM=""
 f_sendmail() {
     # [Refs.: https://linuxhint.com/trim_string_bash/ , 
     # https://stackoverflow.com/a/16623897/3223785 ]
@@ -30,27 +31,63 @@ f_sendmail() {
     MAIL_FROM=${MAIL_FROM#"root"}
     MAIL_FROM=$(echo $MAIL_FROM | sed 's/ *$//g')
 
+    # NOTE: Compress the file in "tar.gz" format and obtain its content in "base64"
+    # format to place it as an attachment in the email to be sent. By Questor
+    # [Ref.: https://stackoverflow.com/a/2664746/3223785 ]
+    LOG_FL_NM=${LOG_FL_PATH_N_NM##*/}
+    LOG_FL_NM_TAR_GZ="${LOG_FL_NM%.*}.tar.gz"
+    cd "/var/log/p_tux/"
+    tar -cvvzf $LOG_FL_NM_TAR_GZ $LOG_FL_NM
+    LOG_FL_TAR_GZ_IN_BASE64=$(base64 $LOG_FL_NM_TAR_GZ)
+    rm -f $LOG_FL_NM_TAR_GZ
+    cd "$SCRIPTDIR_V"
+
     MAIL_CONTENT="From: $MAIL_FROM
 To: $SEND_MAIL_DEST_C
 Subject: Private_tux security routine results ($(hostname))
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary=\"4e507bc1801342fcb67f19f772070d539dc09dadabba482fa42fd656228936e1345d8f993a0c41e\"
 
-$LOG_FILE_NM_NOW output:
+--4e507bc1801342fcb67f19f772070d539dc09dadabba482fa42fd656228936e1345d8f993a0c41e
+Content-Type: text/plain; charset=\"US-ASCII\"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-$(cat "$LOG_FILE_NM_NOW")
+$LOG_FL_PATH_N_NM output:
+
+$(cat $LOG_FL_PATH_N_NM)
 
 []'s
 
 $(hostname)
 Free software! Embrace that idea!
 https://github.com/eduardolucioac/private_tux
+
+--4e507bc1801342fcb67f19f772070d539dc09dadabba482fa42fd656228936e1345d8f993a0c41e
+Content-Type: application;
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=\"$LOG_FL_NM_TAR_GZ\"
+
+$LOG_FL_TAR_GZ_IN_BASE64
+
+--4e507bc1801342fcb67f19f772070d539dc09dadabba482fa42fd656228936e1345d8f993a0c41e--
 "
-    f_log_manager ">>> Send email notification. <<<" "$LOG_FILE_NM_NOW"
     echo -n "$MAIL_CONTENT" | sendmail -Am -d60.5 -v $SEND_MAIL_DEST_C > f_p_tux_op_to_log 2>&1
+    # [Refs.: https://unix.stackexchange.com/a/507171/61742 , 
+    # https://www.computerhope.com/unix/uhostnam.htm , 
+    # https://stackoverflow.com/a/10124347/3223785 , 
+    # http://manpages.ubuntu.com/manpages/trusty/man1/sendEmail.1.html , 
+    # https://linux.die.net/man/8/sendmail.sendmail , 
+    # https://kiranjith.wordpress.com/2009/09/14/sendmail-notes-2-running-sendmail-as-msp-mta/ , 
+    # https://docs.oracle.com/cd/E19683-01/817-1717/sendmail-tbl-10/index.html ]
+
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
+
 }
 
-# NOTE: The Security Routine (p_tux.bash) main function. Controls the entire process. By Questor
+# NOTE: The Security Routine (p_tux.bash) main function. Controls the entire process.
+# By Questor
 f_p_tux() {
 
     # NOTE: Change to the folder path that contains the running script. By Questor
@@ -63,14 +100,14 @@ f_p_tux() {
         mkdir "/var/log/p_tux"
     fi
 
-    f_log_manager ">>> Security routine started. <<<" 0 "p_tux" "/var/log/p_tux"
+    f_log_manager ">>> Security routine started. <<<" 0 "$(hostname -s)" "/var/log/p_tux"
 
-    # NOTE: The value in "$LOG_FILE_NM_NOW" is returned by the f_log_manager function
+    # NOTE: The value in "$LOG_FL_PATH_N_NM" is returned by the f_log_manager function
     # and contains the path and name for the current log that was automatically generated
     # by the f_log_manager function. By Questor
-    LOG_FILE_NM_NOW="$LOG_FILE_NAME"
+    LOG_FL_PATH_N_NM="$LOG_FILE_NAME"
 
-    f_log_manager ">>> Checking distro compatibility. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Checking distro compatibility. <<<" "$LOG_FL_PATH_N_NM"
 
     # NOTE: This way I can execute the function by redirecting stderr and stdout to
     # a file at the same time that I allow the manipulation of variables external to
@@ -81,62 +118,72 @@ f_p_tux() {
     f_chk_distro > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
 
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
+
+    f_log_manager ">>> Checking system processes. <<<" "$LOG_FL_PATH_N_NM"
+
+    # NOTE: Check which processes are currently running on your system. Some malwares
+    # - such as "DDoS" type - may run during a long time and consume a lot of CPU
+    # and memory. Perform preferably between the first checks. By Questor
+    top > f_p_tux_op_to_log 2>&1
+    F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
+
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Update system. By Questor
-    f_log_manager ">>> System update started. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> System update started. <<<" "$LOG_FL_PATH_N_NM"
     case "$DISTRO_TYPE" in
         RH)
             yum -y update > f_p_tux_op_to_log 2>&1
             F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-            f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+            f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
         ;;
         *)
-            f_log_manager "ERROR: Not implemented to your OS." "$LOG_FILE_NM_NOW"
+            f_log_manager "ERROR: Not implemented to your OS." "$LOG_FL_PATH_N_NM"
         ;;
     esac
 
     # NOTE: Log current network connections. By Questor
-    f_log_manager ">>> Log current network connections with netstat. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Log current network connections with netstat. <<<" "$LOG_FL_PATH_N_NM"
     netstat -netaup > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Log most recent logins. By Questor
-    f_log_manager ">>> Log most recent logins with lastlog. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Log most recent logins with lastlog. <<<" "$LOG_FL_PATH_N_NM"
     lastlog > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Log last logged users. By Questor
-    f_log_manager ">>> Log last logged users with last. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Log last logged users with last. <<<" "$LOG_FL_PATH_N_NM"
     last > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
     case "$DISTRO_TYPE" in
         RH)
             # [Ref.: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/security_guide/sec-viewing_current_status_and_settings_of_firewalld ]
             # NOTE: Log firewall service status. By Questor
-            f_log_manager ">>> Firewall service status. <<<" "$LOG_FILE_NM_NOW"
+            f_log_manager ">>> Firewall service status. <<<" "$LOG_FL_PATH_N_NM"
             systemctl status firewalld > f_p_tux_op_to_log 2>&1
             F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-            f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+            f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
             # NOTE: Log firewall rules. By Questor
-            f_log_manager ">>> Firewall rules. <<<" "$LOG_FILE_NM_NOW"
+            f_log_manager ">>> Firewall rules. <<<" "$LOG_FL_PATH_N_NM"
             firewall-cmd --list-all > f_p_tux_op_to_log 2>&1
             F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-            f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+            f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
             # NOTE: Log SELinux status. By Questor
-            f_log_manager ">>> SELinux status. <<<" "$LOG_FILE_NM_NOW"
+            f_log_manager ">>> SELinux status. <<<" "$LOG_FL_PATH_N_NM"
             sestatus > f_p_tux_op_to_log 2>&1
             F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-            f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+            f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
         ;;
         *)
-            f_log_manager "ERROR: Not implemented to your OS." "$LOG_FILE_NM_NOW"
+            f_log_manager "ERROR: Not implemented to your OS." "$LOG_FL_PATH_N_NM"
         ;;
     esac
 
@@ -145,13 +192,13 @@ f_p_tux() {
     # https://unix.stackexchange.com/a/26639/61742 ]
     # NOTE: Log which users have root prerogative. By Questor
     # TIP: Only the root user can have this prerogative. By Questor
-    f_log_manager ">>> Users with root prerogatives. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Users with root prerogatives. <<<" "$LOG_FL_PATH_N_NM"
     grep 'x:0:' /etc/passwd > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Log users who can run commands as root. By Questor
-    f_log_manager ">>> Users who can run commands as root. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Users who can run commands as root. <<<" "$LOG_FL_PATH_N_NM"
 
     # NOTE: The command "grep -v 'not allowed'" excludes all lines that contain the
     # value "not allowed" and the command "sed '$a\\'" adds an extra line break at
@@ -170,22 +217,22 @@ f_p_tux() {
     sed '$a\\'; fi > f_p_tux_op_to_log 2>&1
     # cat f_p_tux_op_to_log
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Log binaries that can be executed with root privileges. By Questor
-    f_log_manager ">>> Binaries that can be executed with root privileges. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Binaries that can be executed with root privileges. <<<" "$LOG_FL_PATH_N_NM"
     find / -path '/proc' -prune -o -perm -04000 -print > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Update chkrootkit. By Questor
-    f_log_manager ">>> Chkrootkit update started. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Chkrootkit update started. <<<" "$LOG_FL_PATH_N_NM"
     f_inst_or_up_chkrootkit 1 > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Chkrootkit scan. By Questor
-    f_log_manager ">>> Chkrootkit scan. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Chkrootkit scan. <<<" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Avoid "not tested"/"can't exec" errors. By Questor
     cd /usr/local/chkrootkit
@@ -195,10 +242,10 @@ f_p_tux() {
     cd "$SCRIPTDIR_V"
 
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Update Rkhunter signatures. By Questor
-    f_log_manager ">>> Rkhunter signatures update started. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Rkhunter signatures update started. <<<" "$LOG_FL_PATH_N_NM"
 
     # NOTE: "--propupd" should be used after any "yum update" automatically or manualy.
     # By Questor
@@ -206,17 +253,17 @@ f_p_tux() {
     rkhunter --update --propupd --nocolors > f_p_tux_op_to_log 2>&1
 
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Rkhunter scan. By Questor
-    f_log_manager ">>> Rkhunter scan. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Rkhunter scan. <<<" "$LOG_FL_PATH_N_NM"
     # rkhunter --check --nocolors --skip-keypress --report-warnings-only
     rkhunter --check --nocolors --skip-keypress > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
-    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FILE_NM_NOW"
+    f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Checks ended. By Questor
-    f_log_manager ">>> Checks ended. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Checks ended. <<<" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Send email notification with information. By Questor
     if [ ${SEND_MAIL_NOTIF_C} -eq 1 ] ; then
@@ -231,7 +278,7 @@ f_p_tux() {
     ls -tp /var/log/p_tux | grep -v '/$' | tail -n +$((LOGS_KEEP_C+1)) | xargs -d '\n' -r rm --
 
     # NOTE: Security routine ended. By Questor
-    f_log_manager ">>> Security routine ended. <<<" "$LOG_FILE_NM_NOW"
+    f_log_manager ">>> Security routine ended. <<<" "$LOG_FL_PATH_N_NM"
 
 }
 
