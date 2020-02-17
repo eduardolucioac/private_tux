@@ -125,7 +125,7 @@ f_p_tux() {
     # NOTE: Check which processes are currently running on your system. Some malwares
     # - such as "DDoS" type - may run during a long time and consume a lot of CPU
     # and memory. Perform preferably between the first checks. By Questor
-    top > f_p_tux_op_to_log 2>&1
+    ps aux > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
 
     f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"

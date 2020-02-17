@@ -29,9 +29,9 @@ f_inst_fail2ban() {
         ;;
     esac
 
-    BANTIME_DEFAULT="3600"
+    BANTIME_DEFAULT="7200"
     QUESTION_F="Inform default \"bantime\" value (seconds).
-Use empty for \"$BANTIME_DEFAULT\" (one hour).
+Use empty for \"$BANTIME_DEFAULT\" (two hours).
  * Time that a given IP will be banned (sshd \"jail\")."
     f_div_section
     f_get_usr_input "$QUESTION_F" 1
@@ -153,7 +153,7 @@ Use empty for \"$FINDTIME_RECIDIVE\" (one day).
         FINDTIME_RECIDIVE=$GET_USR_INPUT_R
     fi
 
-    MAXRETRY_RECIDIVE="3"
+    MAXRETRY_RECIDIVE="2"
     QUESTION_F="Inform recidive \"maxretry\" value.
 Use empty for \"$MAXRETRY_RECIDIVE\".
  * How many attempts against a \"jail\" must occur for an IP to be banned for a long time."
