@@ -124,12 +124,15 @@ f_p_tux() {
 
     f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
 
-    f_log_manager ">>> Checking system processes. <<<" "$LOG_FL_PATH_N_NM"
+    f_log_manager ">>> Checking top ten CPU consuming system processes. <<<" "$LOG_FL_PATH_N_NM"
 
     # NOTE: Check which processes are currently running on your system. Some malwares
     # - such as "DDoS" type - may run during a long time and consume a lot of CPU
     # and memory. Perform preferably between the first checks. By Questor
-    ps aux > f_p_tux_op_to_log 2>&1
+    # ps aux > f_p_tux_op_to_log 2>&1
+    # [Refs.: https://askubuntu.com/a/927072/134723 , 
+    # https://unix.stackexchange.com/a/13970/61742 ]
+    top -b -n 1 | grep -v '[[:blank:]]*top' | head -n 15 | tail -n 11 > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
 
     f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
