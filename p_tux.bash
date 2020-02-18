@@ -72,6 +72,10 @@ $LOG_FL_TAR_GZ_IN_BASE64
 
 --4e507bc1801342fcb67f19f772070d539dc09dadabba482fa42fd656228936e1345d8f993a0c41e--
 "
+
+    # NOTE: Sending e-mail notification. By Questor
+    f_log_manager ">>> Email sending by sendmail started. <<<" "$LOG_FL_PATH_N_NM"
+
     echo -n "$MAIL_CONTENT" | sendmail -Am -d60.5 -v $SEND_MAIL_DEST_C > f_p_tux_op_to_log 2>&1
     # [Refs.: https://unix.stackexchange.com/a/507171/61742 , 
     # https://www.computerhope.com/unix/uhostnam.htm , 
