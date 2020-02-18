@@ -132,7 +132,7 @@ f_p_tux() {
     # ps aux > f_p_tux_op_to_log 2>&1
     # [Refs.: https://askubuntu.com/a/927072/134723 , 
     # https://unix.stackexchange.com/a/13970/61742 ]
-    top -b -n 1 | grep -v '[[:blank:]]*top' | head -n 15 | tail -n 11 > f_p_tux_op_to_log 2>&1
+    top -b -n 1 | grep -v '[[:blank:]]*top' | grep -v '[[:blank:]]*p_tux.bash' | head -n 15 | tail -n 11 > f_p_tux_op_to_log 2>&1
     F_P_TUX_OP_TO_LOG=$(cat f_p_tux_op_to_log)
 
     f_log_manager "$F_P_TUX_OP_TO_LOG" "$LOG_FL_PATH_N_NM"
