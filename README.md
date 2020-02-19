@@ -4,7 +4,7 @@ Private_Tux - Linux Security Utility
 What is Private_Tux?
 -----
 
-<img border="0" alt="Private_Tux" src="https://helpdev.com.br/wp-content/uploads/2013/06/hard-tux.png" height="15%" width="15%"/>Private_Tux
+<img border="0" alt="Private_Tux" src="https://helpdev.com.br/wp-content/uploads/2013/06/hard-tux.png" height="30%" width="30%"/>Private_Tux
 
 Private_Tux is a Linux security utility that aims to facilitate the installation, configuration and use of some useful components for security and/or auditing, facilitating the investigation and detection of possible threats and risks.
 
@@ -18,14 +18,10 @@ Currently Private_Tux is only compatible with CentOS 7, however adjusting it to 
 
 Here are some components used by Private_Tux...
 
- * Fail2ban - Intrusion prevention software structure that protects servers against brute force attacks;
-    URL: https://www.fail2ban.org/wiki/index.php/Main_Page
- * Chkrootkit - Unix-based program designed to help system administrators check their system for known rootkits;
-    URL: http://www.chkrootkit.org/
- * Rkhunter - Unix-based tool that checks for rootkits, backdoors and possible local exploits;
-    URL: https://sourceforge.net/projects/rkhunter/
- * Ez_i - A library (in fact, a bash script) that provides several interesting features for creating interactive bash scripts.
-    URL: https://github.com/eduardolucioac/ez_i
+ * Fail2ban - Intrusion prevention software structure that protects servers against brute force attacks (URL: https://www.fail2ban.org/wiki/index.php/Main_Page );
+ * Chkrootkit - Unix-based program designed to help system administrators check their system for known rootkits (URL: http://www.chkrootkit.org/ );
+ * Rkhunter - Unix-based tool that checks for rootkits, backdoors and possible local exploits (URL: https://sourceforge.net/projects/rkhunter/ );
+ * Ez_i - A library (in fact, a bash script) that provides several interesting features for creating interactive bash scripts (URL: https://github.com/eduardolucioac/ez_i ).
 
 ... in addition to chrony, sendmail, netstat, lastlog, last, firewalld, status (SELinux), getent and other interesting components and techniques.
 
@@ -181,7 +177,7 @@ Install Chrony to keep your server's clock set and synchronized...
 Install Chrony and synchronise (NTP servers) the system clock ("y" recommended)? (y/n) 
 ```
 
-... entering "y".
+... by entering "y".
 
 In the excerpt...
 
@@ -233,7 +229,7 @@ Inform the destinatary of the e-mail notifications (e.g. "my_dest@my_domain.com"
  (use enter to confirm):
 ```
 
-... inform the recipient/destinatary of the email notifications.
+... inform the recipient/destinatary for the email notifications.
 
 **Sendmail installation**
 
@@ -302,11 +298,11 @@ Use empty for "my_domain.com".
  (use enter to confirm):
 ```
 
-... enter the domain for the smtp server or just press enter, if applicable.
+... enter the domain for the smtp server or just press enter (if applicable).
 
 **Fail2ban installation**
 
-Install Fail2ban to prevent brute force attacks on the "sshd" (ssh) service...
+Install Fail2ban to prevent brute force attacks at the "sshd" (ssh) service...
 
 ```
 [...]
@@ -330,7 +326,7 @@ Use empty for "7200" (two hours).
 
 ... choose the default value by pressing "Enter".
 
-For the period considered for possible attacks...
+For the period for possible attacks...
 
 ```
 [...]
@@ -374,7 +370,7 @@ In the excerpt...
 [...]
 > ------------------------------------------------
 ----------------------------------
-Use "srv_security@lightbase.com.br" email as sender ("sender")?
+Use "my_dest@my_domain.com" email as sender ("sender")?
  * If you chose to configure Sendmail using this installer answer "y". (y/n)
 ```
 
@@ -386,7 +382,7 @@ In the excerpt...
 [...]
 > ------------------------------------------------
 ----------------------------------
-Use "srv_security@lightbase.com.br" email as destinatary ("destemail") ("y" recommended)? (y/n)
+Use "my_dest@my_domain.com" email as destinatary ("destemail") ("y" recommended)? (y/n)
 ```
 
 ... enter "y".
@@ -406,7 +402,7 @@ NOTE: Recidive banishes for a longer time.
 
 ... choose the default value by pressing "Enter".
 
-For the period considered for possible attacks (recidive)...
+For the period for possible attacks (recidive)...
 
 ```
 [...]
@@ -459,7 +455,7 @@ Install Rkhunter ("y" recommended)? (y/n)
 
 **Scheduling (Crontab) for the Security Routine**
 
-Make an schedule for the Security Routine...
+Make an schedule for the Security Routine (p_tux.bash)...
 
 ```
 [...]
@@ -494,7 +490,7 @@ How will you define your schedule (job)?
 (select your option and press enter: i - I will set the schedule (job). | r - I will let the installer automatically schedule (job) for me (randomly).):
 ```
 
-NOTE: The random option is good for infrastructures with many servers and to avoid major concerns with scheduling. So we will not have several servers starting the Security Routine at the same time, avoiding possible overloads.
+NOTE: The random option is good for infrastructures with many servers and to avoid major concerns with scheduling. So we will not have several servers starting the Security Routine at the same time avoiding possible overloads.
 
 ... choose the "r" option to choose a "random schedule".
 
