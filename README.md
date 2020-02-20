@@ -528,8 +528,8 @@ Installer finished! Thanks!
 About
 -----
 
-Private_Tux 🄯
-Eduardo Lúcio Amorim Costa
+Private_Tux 🄯  
+Eduardo Lúcio Amorim Costa  
 Brazil-DF
 
 <img border="0" alt="Brazil-DF" src="http://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Map_of_Brazil_with_flag.svg/180px-Map_of_Brazil_with_flag.svg.png" height="15%" width="15%"/>
