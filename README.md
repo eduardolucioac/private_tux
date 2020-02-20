@@ -528,7 +528,7 @@ Installer finished! Thanks!
 About
 -----
 
-Private_Tux 🄯  
+Private_Tux 🄯 BSD-3-Clause  
 Eduardo Lúcio Amorim Costa  
 Brazil-DF
 
